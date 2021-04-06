@@ -1,4 +1,4 @@
-package main
+package core
 
 import (
 	"bufio"
@@ -13,7 +13,7 @@ import (
 	"sync"
 )
 
-func promptString(message string) string {
+func PromptString(message string) string {
 	reader := bufio.NewReader(os.Stdin)
 
 	template := "%s\n\n-> "
@@ -23,13 +23,13 @@ func promptString(message string) string {
 	return text
 }
 
-func promptInt(message string) int {
-	input := promptString(message)
+func PromptInt(message string) int {
+	input := PromptString(message)
 	inputInt, _ := strconv.Atoi(input)
 	return inputInt
 }
 
-func getStringsSubmatchFromRegex(strRegex, text string) (matches [][]string, err error) {
+func GetStringsSubmatchFromRegex(strRegex, text string) (matches [][]string, err error) {
 	exp, err := regexp.Compile(strRegex)
 	if err != nil {
 		return
@@ -38,8 +38,8 @@ func getStringsSubmatchFromRegex(strRegex, text string) (matches [][]string, err
 	return
 }
 
-func getStringSubmatchFromRegex(strRegex, text string) (matches []string, err error) {
-	matchArray, err := getStringsSubmatchFromRegex(strRegex, text)
+func GetStringSubmatchFromRegex(strRegex, text string) (matches []string, err error) {
+	matchArray, err := GetStringsSubmatchFromRegex(strRegex, text)
 	if err != nil || len(matchArray) == 0 {
 		return
 	}
@@ -47,7 +47,7 @@ func getStringSubmatchFromRegex(strRegex, text string) (matches []string, err er
 	return
 }
 
-func getHtmlFromURL(url string) (html string, err error) {
+func GetHtmlFromURL(url string) (html string, err error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return
@@ -61,7 +61,7 @@ func getHtmlFromURL(url string) (html string, err error) {
 	return
 }
 
-func downloadPicture(dir, url string) (err error) {
+func DownloadPicture(dir, url string) (err error) {
 	err = os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
 		return
@@ -87,17 +87,12 @@ func downloadPicture(dir, url string) (err error) {
 	return
 }
 
-func downloadPictureAsync(wg *sync.WaitGroup, cErr chan error, dir, url string, onDone func()) {
-	err := downloadPicture(dir, url)
+func DownloadPictureAsync(wg *sync.WaitGroup, cErr chan error, dir, url string, onDone func()) {
+	err := DownloadPicture(dir, url)
 	if err != nil {
 		cErr <- err
 	} else {
 		onDone()
 	}
 	wg.Done()
-}
-
-func display(str string) {
-	fmt.Printf("\033[0;0H")
-	fmt.Println(str)
 }

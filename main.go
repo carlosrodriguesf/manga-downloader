@@ -2,25 +2,16 @@ package main
 
 import (
 	"fmt"
+	"github.com/carlosrodriguesf/manga-downloader/mangadownloader"
+	"github.com/carlosrodriguesf/manga-downloader/mangahostedbridge"
 	"os"
 )
 
 func main() {
-	pwd, _ := os.Getwd()
-
-	name := promptString("Search manga:")
-	host := GetDefaultHost()
-	manga, err := host.SearchAndSelect(name)
-	if err != nil {
-		fmt.Println(err.Error())
+	host := mangahostedbridge.NewHost()
+	downloader := mangadownloader.NewDownloader(host)
+	if err := downloader.Run(); err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	err = manga.Download(pwd)
-	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
-	}
-
-	fmt.Println("End")
 }
