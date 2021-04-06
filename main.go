@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/carlosrodriguesf/manga-downloader/mangadownloader"
-	"github.com/carlosrodriguesf/manga-downloader/mangahostedbridge"
+	"github.com/carlosrodriguesf/manga-downloader/pkg/mangadownloader"
+	"github.com/carlosrodriguesf/manga-downloader/pkg/mangahostedbridge"
 	"os"
 )
 
