@@ -2,7 +2,6 @@ package mangahostedbridge
 
 import (
 	"github.com/carlosrodriguesf/manga-downloader/pkg/core"
-	"github.com/carlosrodriguesf/manga-downloader/pkg/mangadownloader"
 	"html"
 )
 
@@ -24,7 +23,7 @@ func (m Manga) Title() string {
 	return m.title
 }
 
-func (m Manga) Chapters() (chapters []mangadownloader.Chapter, err error) {
+func (m Manga) Chapters() (chapters []core.Chapter, err error) {
 	h, err := core.GetHtmlFromURL(m.url)
 	if err != nil {
 		return
@@ -39,10 +38,11 @@ func (m Manga) Chapters() (chapters []mangadownloader.Chapter, err error) {
 			return
 		}
 	}
+	chapters = core.ReverseChapters(chapters)
 	return
 }
 
-func (m Manga) parseChaptersSubmatch(matches [][]string) (chapters []mangadownloader.Chapter) {
+func (m Manga) parseChaptersSubmatch(matches [][]string) (chapters []core.Chapter) {
 	for _, mt := range matches {
 		l := len(mt)
 		chapters = append(chapters, NewChapter(&m, html.UnescapeString(mt[l-1]), html.UnescapeString(mt[l-2])))
@@ -50,7 +50,7 @@ func (m Manga) parseChaptersSubmatch(matches [][]string) (chapters []mangadownlo
 	return
 }
 
-func (m Manga) getChaptersFromRegex(regex, html string) (chapters []mangadownloader.Chapter, err error) {
+func (m Manga) getChaptersFromRegex(regex, html string) (chapters []core.Chapter, err error) {
 	matches, err := core.GetStringsSubmatchFromRegex(regex, html)
 	if err != nil {
 		return

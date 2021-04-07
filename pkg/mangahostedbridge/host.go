@@ -2,8 +2,8 @@ package mangahostedbridge
 
 import (
 	"github.com/carlosrodriguesf/manga-downloader/pkg/core"
-	"github.com/carlosrodriguesf/manga-downloader/pkg/mangadownloader"
 	"html"
+	"strings"
 )
 
 const (
@@ -18,7 +18,9 @@ func NewHost() Host {
 	return Host{}
 }
 
-func (h Host) Search(term string) (list []mangadownloader.Manga, err error) {
+func (h Host) Search(term string) (list []core.Manga, err error) {
+	term = strings.ReplaceAll(term, " ", "+")
+	term = strings.ToLower(term)
 	body, err := core.GetHtmlFromURL(defaultHostUrl + term)
 	mangas, err := core.GetStringsSubmatchFromRegex(searchLinkRegex, body)
 	if err != nil {

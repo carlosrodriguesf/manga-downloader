@@ -96,3 +96,10 @@ func DownloadPictureAsync(wg *sync.WaitGroup, cErr chan error, dir, url string, 
 	}
 	wg.Done()
 }
+
+func ReverseChapters(input []Chapter) (chapters []Chapter) {
+	for i := len(input) - 1; i >= 0; i-- {
+		chapters = append(chapters, input[i])
+	}
+	return
+}

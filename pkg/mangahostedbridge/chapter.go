@@ -3,7 +3,6 @@ package mangahostedbridge
 import (
 	"errors"
 	"github.com/carlosrodriguesf/manga-downloader/pkg/core"
-	"github.com/carlosrodriguesf/manga-downloader/pkg/mangadownloader"
 	"strings"
 	"sync"
 )
@@ -27,7 +26,7 @@ func NewChapter(manga *Manga, title, url string) Chapter {
 	}
 }
 
-func (c Chapter) Manga() mangadownloader.Manga {
+func (c Chapter) Manga() core.Manga {
 	return *c.manga
 }
 
@@ -35,14 +34,15 @@ func (c Chapter) Title() string {
 	return c.title
 }
 
-func (c Chapter) Download(chapterDir string, pageDownloadCallback mangadownloader.PageDownloadProgress) error {
+func (c Chapter) Download(chapterDir string, pageDownloadCallback core.PageDownloadProgress) error {
 	pages, err := c.pages()
 	if err != nil {
 		return err
 	}
 
 	pagesCount := len(pages)
-	pageDownloadCallback(0, pagesCount)
+	pagesDownloaded := 0
+	pageDownloadCallback(0, 0, pagesCount)
 
 	cErr := make(chan error)
 	defer close(cErr)
@@ -59,7 +59,8 @@ func (c Chapter) Download(chapterDir string, pageDownloadCallback mangadownloade
 		i := i
 		wg.Add(1)
 		go core.DownloadPictureAsync(&wg, cErr, chapterDir, p, func() {
-			pageDownloadCallback(i+1, pagesCount)
+			pagesDownloaded++
+			pageDownloadCallback(i+1, pagesDownloaded, pagesCount)
 		})
 	}
 	wg.Wait()
