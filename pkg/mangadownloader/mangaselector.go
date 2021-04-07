@@ -28,7 +28,7 @@ func (ms MangaSelector) Select() (manga Manga, err error) {
 }
 
 func (MangaSelector) getTerm() string {
-	term := core.PromptString("Search manga:")
+	term := core.PromptString("Search term for manga (Ex.: one piece):")
 	term = strings.ReplaceAll(term, " ", "+")
 	term = strings.ToLower(term)
 	return term
@@ -38,7 +38,7 @@ func (MangaSelector) selectFromList(list []Manga) Manga {
 	listLen := len(list)
 
 	template := "%s\n\t %d) %s"
-	message := "Selecione o manga que você deseja baixar:"
+	message := "Select the manga you want to download:"
 	for i, m := range list {
 		message = fmt.Sprintf(template, message, i+1, m.Title())
 	}
