@@ -103,3 +103,7 @@ func ReverseChapters(input []Chapter) (chapters []Chapter) {
 	}
 	return
 }
+
+func ChapterChunkName(mangaName string, chapters []Chapter) string {
+	return fmt.Sprintf("%s (%s-%s)", mangaName, chapters[0].Number(), chapters[len(chapters)-1].Number())
+}

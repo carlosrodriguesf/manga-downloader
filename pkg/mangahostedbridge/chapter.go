@@ -2,6 +2,7 @@ package mangahostedbridge
 
 import (
 	"errors"
+	"fmt"
 	"github.com/carlosrodriguesf/manga-downloader/pkg/core"
 	"strings"
 	"sync"
@@ -10,19 +11,26 @@ import (
 const (
 	imgLinkRegex1 = `img_\d+['"]\s+src=['"](.*?)['"]`
 	imgLinkRegex2 = `url['"]:['"](.*?)['"]\}`
+	numberRegex   = `[\w\W]+ #(\d+).*`
 )
 
 type Chapter struct {
-	title string
-	url   string
-	manga *Manga
+	title           string
+	url             string
+	number          string
+	titleSimplified string
+	manga           *Manga
 }
 
 func NewChapter(manga *Manga, title, url string) Chapter {
+	number := extractChapterTitleNumber(title)
+	titleSimplified := fmt.Sprintf("Chapter %s", number)
 	return Chapter{
-		title: title,
-		url:   url,
-		manga: manga,
+		title:           title,
+		url:             url,
+		number:          number,
+		titleSimplified: titleSimplified,
+		manga:           manga,
 	}
 }
 
@@ -32,6 +40,14 @@ func (c Chapter) Manga() core.Manga {
 
 func (c Chapter) Title() string {
 	return c.title
+}
+
+func (c Chapter) Number() string {
+	return c.number
+}
+
+func (c Chapter) TitleSimplified() string {
+	return c.titleSimplified
 }
 
 func (c Chapter) Download(chapterDir string, pageDownloadCallback core.PageDownloadProgress) error {
@@ -87,4 +103,16 @@ func (c Chapter) pages() (pages []string, err error) {
 		pages = append(pages, m[1])
 	}
 	return
+}
+
+func extractChapterTitleNumber(title string) string {
+	str, err := core.GetStringSubmatchFromRegex(numberRegex, title)
+	if err != nil {
+		fmt.Println(err.Error())
+		return ""
+	}
+	if len(str) == 0 {
+		return ""
+	}
+	return str[1]
 }

@@ -39,17 +39,30 @@ func (d *Cli) selectChapters() (err error) {
 }
 
 func (d Cli) mangaDir() string {
-	return d.libraryDir + "/" + d.manga.Title()
+	return fmt.Sprintf("%s/%s", d.libraryDir, d.manga.Title())
 }
 
 func (d Cli) download() error {
 	queue := core.NewMobiGeneratorQueue()
-	for _, c := range d.chapters {
-		chapterDir, err := d.downloadChapter(c)
+
+	chunkSize := 30
+	total := len(d.chapters)
+
+	for start := 0; start < total; start += chunkSize {
+		end := start + chunkSize
+		if end > total {
+			end = total
+		}
+
+		mangaDir := d.mangaDir()
+		chunkDir, err := d.downloadChunk(mangaDir, start, end)
+
 		if err != nil {
+			fmt.Println("Waiting mobi files generation finish.")
+			queue.Wait()
 			return err
 		}
-		queue.Add(chapterDir)
+		queue.Add(chunkDir)
 	}
 
 	fmt.Println("Waiting mobi files generation finish.")
@@ -57,8 +70,21 @@ func (d Cli) download() error {
 	return queue.Err()
 }
 
-func (d Cli) downloadChapter(c core.Chapter) (string, error) {
-	chapterDir := d.mangaDir() + "/" + c.Title()
+func (d Cli) downloadChunk(mangaDir string, start, end int) (string, error) {
+	chapters := d.chapters[start:end]
+	chunkName := core.ChapterChunkName(d.manga.Title(), chapters)
+	chunkDir := fmt.Sprintf("%s/%s", mangaDir, chunkName)
+	for _, c := range chapters {
+		chapterDir := fmt.Sprintf("%s/%s", chunkDir, c.TitleSimplified())
+		err := d.downloadChapter(chapterDir, c)
+		if err != nil {
+			return chunkDir, err
+		}
+	}
+	return chunkDir, nil
+}
+
+func (d Cli) downloadChapter(chapterDir string, c core.Chapter) error {
 	template := "\nDownloading\n\tManga: %s\n\tChapter: %s\n\tDir: %s\n"
 	fmt.Printf(template, d.manga.Title(), c.Title(), chapterDir)
 
@@ -68,5 +94,5 @@ func (d Cli) downloadChapter(c core.Chapter) (string, error) {
 	})
 
 	fmt.Print("\n")
-	return chapterDir, err
+	return err
 }

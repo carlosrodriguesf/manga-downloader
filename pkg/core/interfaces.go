@@ -10,6 +10,8 @@ type Manga interface {
 type Chapter interface {
 	Title() string
 	Manga() Manga
+	Number() string
+	TitleSimplified() string
 	Download(chapterDir string, event PageDownloadProgress) error
 }
 
