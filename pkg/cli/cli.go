@@ -45,6 +45,25 @@ func (d Cli) mangaDir() string {
 func (d Cli) download() error {
 	queue := core.NewMobiGeneratorQueue()
 
+	for _, c := range d.chapters {
+		mangaDir := d.mangaDir()
+		chapterDir := fmt.Sprintf("%s/%s", mangaDir, c.TitleSimplified())
+		if err := d.downloadChapter(chapterDir, c); err != nil {
+			fmt.Println("Waiting mobi files generation finish.")
+			queue.Wait()
+			return err
+		}
+		queue.Add(chapterDir)
+	}
+
+	fmt.Println("Waiting mobi files generation finish.")
+	queue.Wait()
+	return queue.Err()
+}
+
+func (d Cli) downloadChunked() error {
+	queue := core.NewMobiGeneratorQueue()
+
 	chunkSize := 30
 	total := len(d.chapters)
 

@@ -45,7 +45,7 @@ func (m *MobiGeneratorQueue) generateMOBI(chapterDir string) {
 	mu.Lock()
 
 	cmdOutput := &bytes.Buffer{}
-	cmd := exec.Command("kcc-c2e", "-m", "-f", "MOBI", chapterDir)
+	cmd := exec.Command("kcc-c2e", "-m", "-f", "MOBI", "-g", "1.0", chapterDir)
 	cmd.Stdout = cmdOutput
 	err := cmd.Run()
 	if err != nil {

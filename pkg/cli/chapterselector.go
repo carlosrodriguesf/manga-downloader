@@ -25,7 +25,7 @@ func (cs ChapterSelector) Select() (chapters []core.Chapter, err error) {
 	for i, c := range chapters {
 		message = fmt.Sprintf(template, message, i+1, c.Title())
 	}
-	message += "\n\nSelect chapters: \n\n\tall - To download all chapters\n\tnumber - To download specifc chapter (Ex.: 941)\n\trange - To donwload a interval of chapters (Ex.: 100-400)"
+	message += "\n\nSelect chapters: \n\n\tall - To downloadChunked all chapters\n\tnumber - To downloadChunked specifc chapter (Ex.: 941)\n\trange - To donwload a interval of chapters (Ex.: 100-400)"
 	rangeTerm := core.PromptString(message)
 	if rangeTerm == "all" {
 		return

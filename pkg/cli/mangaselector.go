@@ -30,7 +30,7 @@ func (MangaSelector) selectFromList(list []core.Manga) core.Manga {
 	listLen := len(list)
 
 	template := "%s\n\t %d) %s"
-	message := "Select the manga you want to download:"
+	message := "Select the manga you want to downloadChunked:"
 	for i, m := range list {
 		message = fmt.Sprintf(template, message, i+1, m.Title())
 	}
