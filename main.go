@@ -1,17 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"github.com/carlosrodriguesf/manga-downloader/pkg/cli"
-	"github.com/carlosrodriguesf/manga-downloader/pkg/mangahostedbridge"
+	"github.com/carlosrodriguesf/manga-downloader/pkg/app"
+	"github.com/carlosrodriguesf/manga-downloader/pkg/host/mangahosted"
+	"log"
 	"os"
 )
 
 func main() {
-	host := mangahostedbridge.NewHost()
-	downloader := cli.NewCli(host)
-	if err := downloader.Run(); err != nil {
-		fmt.Println("ERROR", err)
+	host := mangahosted.New()
+	err := app.New(host).Run()
+	if err != nil {
+		log.Fatalln(err)
 		os.Exit(1)
 	}
 }
